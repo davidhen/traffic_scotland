@@ -28,7 +28,7 @@ report <- function(rmd, n_file, open_file = TRUE,
   } else {
     # Make nfiles with always 2 digits
     n_file <- ifelse(as.integer(n_file) < 10, paste0("0", n_file), n_file)
-    file_name <- paste0(n_file, "-", html_name)
+    file_name <- paste0(n_file, "_", html_name)
   }
   
   # Produce the file. Simple wrapper of the render function
