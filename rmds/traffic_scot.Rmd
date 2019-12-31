@@ -7,22 +7,29 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+[Link to data](hhttps://statistics.gov.scot/slice?dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Froad-network-traffic&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fdimension%2Findicator%28roadNetworkTraffic%29=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fconcept%2Findicator-road-network-traffic%2Fthe-total-million-vehicle-kilometres-on-scottish-roads)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+
+
+## Packages
+
+```{r pacakages, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magrittr)
+library(here)
+here()
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r import}
+raw_data <- read_csv(here("raw_data/road-network-traffic.csv"), skip = 7)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r look}
+raw_data %<>%
+  select(-1)
+raw_data
+```
+
