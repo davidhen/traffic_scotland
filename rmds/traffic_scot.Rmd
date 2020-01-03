@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-[Link to data](hhttps://statistics.gov.scot/slice?dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Froad-network-traffic&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fdimension%2Findicator%28roadNetworkTraffic%29=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fconcept%2Findicator-road-network-traffic%2Fthe-total-million-vehicle-kilometres-on-scottish-roads)
+[Link to data](https://statistics.gov.scot/slice?dataset=http%3A%2F%2Fstatistics.gov.scot%2Fdata%2Froad-network-traffic&http%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23measureType=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fmeasure-properties%2Fcount&http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fdimension%2Findicator%28roadNetworkTraffic%29=http%3A%2F%2Fstatistics.gov.scot%2Fdef%2Fconcept%2Findicator-road-network-traffic%2Fthe-total-million-vehicle-kilometres-on-scottish-roads)
 
 
 
@@ -19,8 +19,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r pacakages, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(magrittr)
+library(janitor)
+library(ggrepel)
 library(here)
 here()
+theme_set(theme_minimal(base_size = 14, base_family = "Roboto"))
 ```
 
 ```{r import}
@@ -31,5 +34,56 @@ raw_data <- read_csv(here("raw_data/road-network-traffic.csv"), skip = 7)
 raw_data %<>%
   select(-1)
 raw_data
+```
+
+
+
+```{r, fig.width=12, fig.height=9}
+raw_data %>% 
+  rename(council = `Reference Area`) %>% 
+  pivot_longer(-council, names_to = "year") %>% 
+  filter(council != "Scotland") %>% 
+  mutate(label = if_else(year == max(year),
+                         as.character(council), NA_character_)) -> clean_data
+
+clean_data %>% 
+  ggplot(aes(year, value, group = council, colour = council)) +
+  geom_path() +
+  geom_label_repel(aes(label = label), nudge_x = 2) +
+  scale_x_discrete(expand = expand_scale(add = c(0.1, 1.5))) +
+  theme(legend.position = "none") +
+  labs(title = "Total Vehicle Kilometers on Scottish Roads",
+       subtitle = "by local authority area, 2006-2018",
+       x = "Year", 
+       y = "vehicle/km (million)")
+```
+
+
+```{r fig.width=14, fig.height=10.5}
+clean_data %>% 
+  ggplot(aes(year, value, group = council)) +
+  geom_point() +
+  geom_path() +
+  facet_wrap(vars(council)) +
+  scale_x_discrete(breaks = c("2006", "2012", "2018")) +
+  theme(axis.text.x = element_text(angle = 30)) +
+  labs(title = "Total Vehicle Kilometers on Scottish Roads",
+       subtitle = "by local authority area, 2006-2018",
+       x = "Year", 
+       y = "vehicle/km (million)")
+```
+
+
+```{r fig.width=14, fig.height=10.5}
+clean_data %>% 
+  ggplot(aes(year, value, group = council)) +
+  geom_col() +
+  facet_wrap(vars(council)) +
+  scale_x_discrete(breaks = c("2006", "2012", "2018")) +
+  theme(axis.text.x = element_text(angle = 30)) +
+  labs(title = "Total Vehicle Kilometers on Scottish Roads",
+       subtitle = "by local authority area, 2006-2018",
+       x = "Year", 
+       y = "vehicle/km (million)")
 ```
 
